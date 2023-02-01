@@ -16,6 +16,15 @@ const logInCredentials = reactive({
     password: ""
 });
 
+// Add user as a subcriber to Novu notifications
+// Send welcoming notification
+async function registerNoficationsSubscriber(email) {
+    const {data: responseData} = await useFetch('/api/register-notifications-subscriber', {
+        method: 'post',
+        body: { email }
+    });
+}
+
 async function redirectToDashboard(email){
     if(email?.includes(config.public.adminDomain)) return router.push('/admin/')
     return router.push("/account");
@@ -29,6 +38,9 @@ async function logIn() {
     const { error } = await client.auth.signInWithPassword({email, password});
     if(!error){
         loading.value = false
+        if(firstTimeAuthentication){
+            registerNoficationsSubscriber(email)
+        }
         redirectToDashboard(email)
     }
     console.log(error);
@@ -36,6 +48,12 @@ async function logIn() {
 
 watchEffect(async () => {
     if(user.value){
+        if(firstTimeAuthentication){
+            registerNoficationsSubscriber(
+                logInCredentials.email
+                || user.value.email
+            )
+        }
         redirectToDashboard(
             logInCredentials.email
             || user.value.email
