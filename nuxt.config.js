@@ -19,6 +19,8 @@ export default defineNuxtConfig({
       novuApiIdentifier: '',
       passwordResetLink: '',
       adminDomain: '',
+      optOutLink: '',
+      feedbackUrl: ''
     },
   },
   modules: [
